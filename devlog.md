@@ -6,3 +6,7 @@ I added some mroe functionality to the main loop, I added the error handling met
 
 Monday October 20th, 2025
 Today was much better, and I got as decent bit done for the code. I got to add the main functionality, the functions that do the evaluation of the functions. This mainly calls the functions that should do the necessary evaluations, but calls and handles them as needed.
+
+
+Tuesday October 21st, 2025
+Today I did get the bulkiest part of the code done. that specific functions that do the actual math and calculations. These were a bit tricky and I did rearrange the methods a bit, but I did stick to the original structure I had used with the evaluation method. I only need to implement the batch method and the normal main method such that the calculator runs. And ofcourse, test it.

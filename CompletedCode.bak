@@ -1,5 +1,7 @@
 #lang racket
-
+;This is the main loop of the program. It takes in the boolean describing if the program is running in batch mode or not.
+;If it is in batch mode, it displays '>'.
+;It also takes the history (past values) as an argument to append to the answer)
 (define (main-loop interactive? history)
 
   ;if it is in interactive mode, it prints a line and waits for the user
@@ -32,6 +34,11 @@
                (begin
                  (displayln "Error: Invalid expression")
                  (main-loop interactive? history)))))])))
+       
+;check if all the characters are whitespaces/nothing left to evaluate
+(define (all-whitespace? char-list)
+  (if (null? char-list) #t;base case
+      (and (char-whitespace? (car char-list)) (all-whitespace? (cdr char-list)))));check if the car and rest of the list is a whitespace
 
 (define (eval-expression history char-list)
   (let ([trimmed (remove-leading-whitespace char-list)])
@@ -47,9 +54,9 @@
         [(char=? token #\-)
          (if (and (not (null? rest)) (char-numeric? (car rest)));if rest is not null, and the next value is a number (not a whitespace), it is a negative number
              (parse-number trimmed)
-             (parse-unary - history rest))];
+             (parse-unary - history rest))]
         [(char=? token #\$) (parse-history history rest)]
-        [(char-numeric? token) (parse-number trimmed)];for when there is an expression
+        [(char-numeric? token) (parse-number trimmed)]
         [else (error "Invalid-expression")]))))
 
 (define (parse-binary op history char-list)
@@ -64,7 +71,7 @@
         (error "Division by zero"))
       (values (quotient val1 val2) rest2))))
 
-(define (parse-unary op history char-list);get the entire expression after to become negative
+(define (parse-unary op history char-list)
   (let-values ([(val rest) (eval-expression history char-list)])
     (values (op val) rest)))
 
@@ -96,16 +103,24 @@
           (values (list-ref (reverse history) (sub1 id)) rest)
           (error "Invalid Expression")))))
 
-;check if all the characters are whitespaces/nothing left to evaluat
-(define (all-whitespace? char-list)
-  (if (null? char-list) #t;base case
-      (and (char-whitespace? (car char-list)) (all-whitespace? (cdr char-list)))));check if the car and rest of the list is a whitespace
-
-
 (define (remove-leading-whitespace char-list)
   (if (or (null? char-list) (not (char-whitespace? (car char-list))))
       char-list ;if the list is empty or doesn't start with whitespace, return it.
-      (remove-leading-whitespace (cdr char-list))))
+      (remove-leading-whitespace (cdr char-list)))) 
+
+(define (main)
+  (define interactive?
+    (let ([args (current-command-line-arguments)])
+      (not (or (vector-member "-b" args)
+               (vector-member "--batch" args)))))
+  
+  (main-loop interactive? '()))
 
 
 
+(main)
+
+
+
+
+         
