@@ -10,3 +10,7 @@ Today was much better, and I got as decent bit done for the code. I got to add t
 
 Tuesday October 21st, 2025
 Today I did get the bulkiest part of the code done. that specific functions that do the actual math and calculations. These were a bit tricky and I did rearrange the methods a bit, but I did stick to the original structure I had used with the evaluation method. I only need to implement the batch method and the normal main method such that the calculator runs. And ofcourse, test it.
+
+
+Friday October 24th, 2025
+Today I finally got to the rest of the code. implemented the final funcitons needed as well as the main method. I did also integrate the batch and prompt mode, and tested it. I could not test the batch mode but it should still work
