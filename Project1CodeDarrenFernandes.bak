@@ -13,7 +13,7 @@
   (let ([line (read-line)])
     (cond
       [(eof-object? line) (void)] ;if the line read is empty/end of file/end by user, ends the program
-      [(equal? (string-trim line) "quit") (void)] ; if the line has the word quit exactly. I do not :)
+      [(equal? line "quit") (void)] ; if the line has the word quit exactly. I do not :)
       [else ;all other cases
        (with-handlers ([exn:fail? (lambda (ex)    ;try the code, but if any error is returned, send it back to the output with the prefix "error"
                                     (display "Error: ")
