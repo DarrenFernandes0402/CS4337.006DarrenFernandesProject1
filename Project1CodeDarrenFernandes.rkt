@@ -1,5 +1,7 @@
 #lang racket
-
+;This is the main loop of the program. It takes in the boolean describing if the program is running in batch mode or not.
+;If it is in batch mode, it displays '>'.
+;It also takes the history (past values) as an argument to append to the answer)
 (define (main-loop interactive? history)
 
   ;if it is in interactive mode, it prints a line and waits for the user
@@ -11,7 +13,7 @@
   (let ([line (read-line)])
     (cond
       [(eof-object? line) (void)] ;if the line read is empty/end of file/end by user, ends the program
-      [(equal? line "quit") (void)] ; if the line has the word quit exactly
+      [(equal? line "quit") (void)] ; if the line has the word quit exactly. I do not :)
       [else ;all other cases
        (with-handlers ([exn:fail? (lambda (ex)    ;try the code, but if any error is returned, send it back to the output with the prefix "error"
                                     (display "Error: ")
@@ -32,6 +34,11 @@
                (begin
                  (displayln "Error: Invalid expression")
                  (main-loop interactive? history)))))])))
+       
+;check if all the characters are whitespaces/nothing left to evaluate
+(define (all-whitespace? char-list)
+  (if (null? char-list) #t;base case
+      (and (char-whitespace? (car char-list)) (all-whitespace? (cdr char-list)))));check if the car and rest of the list is a whitespace
 
 (define (eval-expression history char-list)
   (let ([trimmed (remove-leading-whitespace char-list)])
@@ -47,9 +54,9 @@
         [(char=? token #\-)
          (if (and (not (null? rest)) (char-numeric? (car rest)));if rest is not null, and the next value is a number (not a whitespace), it is a negative number
              (parse-number trimmed)
-             (parse-unary - history rest))];
+             (parse-unary - history rest))];else its an expresssion that needs to be treated as a negative before returning
         [(char=? token #\$) (parse-history history rest)]
-        [(char-numeric? token) (parse-number trimmed)];for when there is an expression
+        [(char-numeric? token) (parse-number trimmed)]
         [else (error "Invalid-expression")]))))
 
 (define (parse-binary op history char-list)
@@ -72,7 +79,7 @@
   (define (is-num-char? c)
     (or (char-numeric? c)
         (and (char=? c #\-)
-             (eq? (list-ref char-list 0) #\-)))) ; Allow '-' only at the start
+             (eq? (list-ref char-list 0) #\-)))) ;allow '-' only at the start
   
   (let-values ([(num-chars rest) (custom-span is-num-char? char-list)])
     (let ([num (string->number (list->string num-chars))])
@@ -92,20 +99,25 @@
       (error "Invalid Expression"))
     (let ([id (string->number (list->string id-chars))])
       (if (and id (> id 0) (<= id (length history)))
-          ;; History is (v3 v2 v1). To get $1 (v1), we reverse to (v1 v2 v3) and get index 0.
+          ;history is in the opposite order so reverse it
           (values (list-ref (reverse history) (sub1 id)) rest)
           (error "Invalid Expression")))))
-
-;check if all the characters are whitespaces/nothing left to evaluat
-(define (all-whitespace? char-list)
-  (if (null? char-list) #t;base case
-      (and (char-whitespace? (car char-list)) (all-whitespace? (cdr char-list)))));check if the car and rest of the list is a whitespace
-
 
 (define (remove-leading-whitespace char-list)
   (if (or (null? char-list) (not (char-whitespace? (car char-list))))
       char-list ;if the list is empty or doesn't start with whitespace, return it.
-      (remove-leading-whitespace (cdr char-list))))
+      (remove-leading-whitespace (cdr char-list)))) 
 
+;checks the command line argument to see if it should run in batch mode
+(define prompt?
+  (let [(args (current-command-line-arguments))]
+    (cond
+      [(= (vector-length args) 0) #t]
+      [(string=? (vector-ref args 0) "-b") #f]
+      [(string=? (vector-ref args 0) "--batch") #f]
+      [else #t])))
 
+(define (main)
+  (main-loop prompt? '()))
 
+(main)
